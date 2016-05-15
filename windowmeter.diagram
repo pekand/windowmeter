@@ -1,0 +1,32 @@
+<diagram>
+  <option>
+    <shiftx>-728</shiftx>
+    <shifty>225</shifty>
+    <endPositionx>0</endPositionx>
+    <endPositiony>0</endPositiony>
+    <firstLayereShift.x>0</firstLayereShift.x>
+    <firstLayereShift.y>0</firstLayereShift.y>
+    <homelayer>0</homelayer>
+    <endlayer>0</endlayer>
+    <diagramreadonly>false</diagramreadonly>
+    <grid>true</grid>
+    <borders>false</borders>
+    <defaultfont type="font">
+      <name>Open Sans</name>
+      <size>10</size>
+      <bold>false</bold>
+      <italic>false</italic>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+    </defaultfont>
+    <coordinates>false</coordinates>
+    <window.position.restore>false</window.position.restore>
+    <window.position.x>0</window.position.x>
+    <window.position.y>0</window.position.y>
+    <window.position.width>100</window.position.width>
+    <window.position.height>100</window.position.height>
+    <window.state>0</window.state>
+  </option>
+  <rectangles />
+  <lines />
+</diagram>
