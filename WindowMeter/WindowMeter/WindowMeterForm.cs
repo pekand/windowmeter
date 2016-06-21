@@ -182,7 +182,12 @@ namespace WindowMeter
 
             }
 
-            if (e.KeyCode == Keys.F10 || e.KeyCode == Keys.Escape)
+            if (e.KeyCode == Keys.Escape)
+            {
+                this.Hide();
+            }
+
+            if (e.KeyCode == Keys.F10)
             {
                 this.Close();
             }
