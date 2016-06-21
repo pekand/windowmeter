@@ -61,6 +61,7 @@ namespace WindowMeter
 
         private const int cGrip = 16;      // Grip size
         private const int cCaption = 25;   // Caption bar height;
+        private string sizeLabel;
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
@@ -110,6 +111,12 @@ namespace WindowMeter
             {
                 this.Opacity = 0.8;
             }
+
+            if (e.Button == MouseButtons.Right)
+            {
+                Point pt = this.PointToScreen(e.Location);
+                contextMenuStrip1.Show(pt);
+            }
         }
 
         private void WindowMeterForm_Load(object sender, EventArgs e)
@@ -120,7 +127,7 @@ namespace WindowMeter
         private void WindowMeterForm_Resize(object sender, EventArgs e)
         {
 
-            label1.Text = this.Width.ToString() + 'x' + this.Height.ToString();    
+            this.sizeLabel = this.Width.ToString() + 'x' + this.Height.ToString();    
         }
 
         private void WindowMeterForm_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -135,10 +142,7 @@ namespace WindowMeter
 
         private void WindowMeterForm_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
-            {
-                contextMenuStrip1.Show(this.Left+e.X,this.Top+e.Y);
-            }
+            
         }
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -174,7 +178,7 @@ namespace WindowMeter
                 this.Width = 200;
                 this.Left = (Screen.PrimaryScreen.Bounds.Width - this.Width) / 2;
                 this.Top = (Screen.PrimaryScreen.Bounds.Height - this.Height) / 2;
-                label1.Text = this.Width.ToString() + 'x' + this.Height.ToString();  
+                sizeLabel = this.Width.ToString() + 'x' + this.Height.ToString();  
 
             }
 
@@ -238,7 +242,7 @@ namespace WindowMeter
             this.Width = 200;
             this.Left = (Screen.PrimaryScreen.Bounds.Width - this.Width) / 2;
             this.Top = (Screen.PrimaryScreen.Bounds.Height - this.Height) / 2;
-            label1.Text = this.Width.ToString() + 'x' + this.Height.ToString();
+            sizeLabel = this.Width.ToString() + 'x' + this.Height.ToString();
         }
 
         private void contextMenuStrip2_Click(object sender, EventArgs e)
@@ -274,12 +278,12 @@ namespace WindowMeter
             this.Width = 200;
             this.Left = (Screen.PrimaryScreen.Bounds.Width - this.Width) / 2;
             this.Top = (Screen.PrimaryScreen.Bounds.Height - this.Height) / 2;
-            label1.Text = this.Width.ToString() + 'x' + this.Height.ToString();
+            sizeLabel = this.Width.ToString() + 'x' + this.Height.ToString();
         }
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
-
+            this.copyToolStripMenuItem.Text = "Copy " + sizeLabel;
         }
 
         private Bitmap CaptureScreen()
@@ -346,7 +350,7 @@ namespace WindowMeter
         public string GetTempFile()
         {
             DateTime dt = DateTime.Now;
-            String DocName = String.Format("{0:yyyy-M-d HH-mm-ss}", dt) + ".png";
+            String DocName = String.Format("{0:yyyy-M-d-HH-mm-ss}", dt) + ".png";
 
             string path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Directory.CreateDirectory(path);
@@ -418,7 +422,20 @@ namespace WindowMeter
             Rectangle rc = new Rectangle(this.ClientSize.Width - cGrip, this.ClientSize.Height - cGrip, cGrip, cGrip);
             ControlPaint.DrawSizeGrip(e.Graphics, this.BackColor, rc);
             rc = new Rectangle(0, 0, this.ClientSize.Width, 32);
-            //e.Graphics.FillRectangle(Brushes.DarkBlue, rc);
+
+            Graphics g = e.Graphics;
+
+            int fontSize = 16;
+            int textPos = 10;
+            if (this.Height<50 || this.Width < 80) {
+                fontSize = 8;
+                textPos = 3;
+            }
+            System.Drawing.Font drawFont = new System.Drawing.Font("Arial", fontSize);
+            System.Drawing.SolidBrush drawBrush = new System.Drawing.SolidBrush(System.Drawing.Color.Black);
+
+            System.Drawing.StringFormat drawFormat = new System.Drawing.StringFormat();
+            g.DrawString(sizeLabel, drawFont, drawBrush, textPos, textPos, drawFormat);
         }
 
         protected override void WndProc(ref Message m)
@@ -438,6 +455,13 @@ namespace WindowMeter
                     return;
                 }
             }
+            if (m.Msg == 0xa4)
+            {  // Trap WM_NCRBUTTONDOWN
+                Point pos = new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16);
+                contextMenuStrip1.Show(pos);
+                return;
+            }
+
             base.WndProc(ref m);
         }
 
@@ -454,6 +478,11 @@ namespace WindowMeter
         private void setSizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void WindowMeterForm_Paint(object sender, PaintEventArgs e)
+        {
+            
         }
     }
 }
