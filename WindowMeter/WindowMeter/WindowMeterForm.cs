@@ -121,7 +121,15 @@ namespace WindowMeter
 
         private void WindowMeterForm_Load(object sender, EventArgs e)
         {
+            this.Left = Properties.Settings.Default.PosLeft;
+            this.Top = Properties.Settings.Default.PosTop;
 
+            if (!this.IsOnScreen(this))
+            {
+                this.Left = (Screen.PrimaryScreen.Bounds.Width - this.Width) / 2;
+                this.Top = (Screen.PrimaryScreen.Bounds.Height - this.Height) / 2;
+                this.WindowState = FormWindowState.Normal;
+            }
         }
 
         private void WindowMeterForm_Resize(object sender, EventArgs e)
@@ -378,6 +386,10 @@ namespace WindowMeter
 
         private void WindowMeterForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            Properties.Settings.Default.PosLeft = this.Left;
+            Properties.Settings.Default.PosTop = this.Top;
+            Properties.Settings.Default.Save();
+
             if (File.Exists(lastfile))
             {
                 File.Delete(lastfile);
@@ -488,6 +500,23 @@ namespace WindowMeter
         private void WindowMeterForm_Paint(object sender, PaintEventArgs e)
         {
             
+        }
+
+        // check if form is on screen
+        public bool IsOnScreen(Form form)
+        {
+            Screen[] screens = Screen.AllScreens;
+            foreach (Screen screen in screens)
+            {
+                Point formTopLeft = new Point(form.Left, form.Top);
+
+                if (screen.WorkingArea.Contains(formTopLeft))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
