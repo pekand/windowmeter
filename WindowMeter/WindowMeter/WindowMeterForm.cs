@@ -10,6 +10,8 @@ namespace WindowMeter
 {
     public partial class WindowMeterForm : Form
     {
+        FormSetSize formSetSize = new FormSetSize();
+
         public WindowMeterForm()
         {
             InitializeComponent();
@@ -517,6 +519,19 @@ namespace WindowMeter
             }
 
             return false;
+        }
+
+        public void SetSize(int width = 0, int height = 0)
+        {
+            this.Width = width;
+            this.Height = height;
+        }
+
+        private void setSizeToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            formSetSize.windowMeterForm = this;
+            formSetSize.SetSize(this.Width, this.Height);
+            formSetSize.ShowDialog();
         }
     }
 }

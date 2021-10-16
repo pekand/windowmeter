@@ -84,6 +84,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="forms\FormSetSize.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="forms\FormSetSize.Designer.cs">
+      <DependentUpon>FormSetSize.cs</DependentUpon>
+    </Compile>
     <Compile Include="WindowMeterForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -92,6 +98,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="forms\FormSetSize.resx">
+      <DependentUpon>FormSetSize.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="WindowMeterForm.resx">
       <DependentUpon>WindowMeterForm.cs</DependentUpon>
     </EmbeddedResource>

@@ -1,3 +1,5 @@
+*.exe
+signature.txt
 /WindowMeter/WindowMeter/bin
 /WindowMeter/WindowMeter/obj
 /WindowMeter/.vs
