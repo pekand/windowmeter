@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Specialized;
+using System.Xml.Linq;
+using System.Runtime.CompilerServices;
 
 namespace WindowMeter
 {
@@ -55,7 +57,16 @@ namespace WindowMeter
                 catch (Exception ex)
                 {
                 }
-            } 
+            }
+
+            MyCallback callbackMethod = new MyCallback(PrintMessage);
+
+            Hook.Register(callbackMethod);
+        }
+
+        public void PrintMessage(string message)
+        {
+            this.makeAreaScreensot = true;
         }
 
         Point dragOffset;
@@ -303,10 +314,11 @@ namespace WindowMeter
 
         private Bitmap CaptureScreen()
         {
-            Size s = Screen.PrimaryScreen.Bounds.Size;
-            Bitmap bmp = new Bitmap(s.Width, s.Height);
+            Screen screen = Screen.FromControl(this);
+            Rectangle bounds = screen.Bounds;
+            Bitmap bmp = new Bitmap(bounds.Width, bounds.Height);
             Graphics g = Graphics.FromImage(bmp);
-            g.CopyFromScreen(0, 0, 0, 0, s);
+            g.CopyFromScreen(bounds.Location, Point.Empty, bounds.Size);
             return bmp;
         }
 
@@ -330,6 +342,7 @@ namespace WindowMeter
             this.Show();
         }
 
+        
         private void CaptureAreaToFile()
         {
             if (File.Exists(lastfile))
@@ -343,12 +356,18 @@ namespace WindowMeter
             Rectangle r = this.RectangleToScreen(ClientRectangle);
             Bitmap b = GetDesktopImage(r);
             b.Save(lastfile, System.Drawing.Imaging.ImageFormat.Png);
+
+            this.FileToClipboard(lastfile);
+            //Clipboard.SetImage(b);
+            this.Show();
+        }
+
+        [MethodImpl(MethodImplOptions.NoOptimization)]
+        private void FileToClipboard(string path)
+        {
             StringCollection paths = new StringCollection();
             paths.Add(lastfile);
             Clipboard.SetFileDropList(paths);
-
-            //Clipboard.SetImage(b);
-            this.Show();
         }
 
         public Bitmap GetDesktopImage(Rectangle rect)
@@ -377,8 +396,6 @@ namespace WindowMeter
         private void captureToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.CaptureAreaToFile();
-            this.WindowState = FormWindowState.Minimized;
-
         }
 
         private void captureWindowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -409,7 +426,8 @@ namespace WindowMeter
             catch (Exception ex)
             {
             }
-            
+
+            Hook.UnRegister();
         }
 
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -532,6 +550,16 @@ namespace WindowMeter
             formSetSize.windowMeterForm = this;
             formSetSize.SetSize(this.Width, this.Height);
             formSetSize.ShowDialog();
+        }
+
+
+        private bool makeAreaScreensot = false;
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (makeAreaScreensot) {
+                this.CaptureAreaToFile();
+                makeAreaScreensot = false;
+            }
         }
     }
 }
