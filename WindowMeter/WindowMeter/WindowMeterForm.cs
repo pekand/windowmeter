@@ -70,11 +70,23 @@ namespace WindowMeter
         }
 
         Point dragOffset;
-        string lastfile="";
+        private List<string> lastfile = new List<string>();
 
         private const int cGrip = 16;      // Grip size
         private const int cCaption = 25;   // Caption bar height;
         private string sizeLabel;
+
+        public void clearOldFiles() {
+            foreach (string file in lastfile)
+            {
+                if (File.Exists(file))
+                {
+                    File.Delete(file);
+                }
+            }
+
+            lastfile.Clear();
+        }
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
@@ -185,7 +197,8 @@ namespace WindowMeter
 
             if (e.KeyCode == Keys.F3)
             {
-                this.CaptureScreenToFile();
+                Screen screen = Screen.FromControl(this);
+                this.CaptureScreenToFile(screen);
             }
 
             if (e.KeyCode == Keys.F4)
@@ -312,9 +325,9 @@ namespace WindowMeter
             this.copyToolStripMenuItem.Text = "Copy " + sizeLabel;
         }
 
-        private Bitmap CaptureScreen()
+        private Bitmap CaptureScreen(Screen screen)
         {
-            Screen screen = Screen.FromControl(this);
+            
             Rectangle bounds = screen.Bounds;
             Bitmap bmp = new Bitmap(bounds.Width, bounds.Height);
             Graphics g = Graphics.FromImage(bmp);
@@ -322,18 +335,16 @@ namespace WindowMeter
             return bmp;
         }
 
-        private void CaptureScreenToFile()
+        private void CaptureScreenToFile(Screen screen)
         {
-            if (File.Exists(lastfile))
-            {
-                File.Delete(lastfile);
-            }
+            this.clearOldFiles();
 
-            lastfile = GetTempFile();
+            string lastfile = GetTempFile();
+            this.lastfile.Add(lastfile);
 
             this.Hide();
             Rectangle r = this.RectangleToScreen(ClientRectangle);
-            Bitmap b = this.CaptureScreen();
+            Bitmap b = this.CaptureScreen(screen);
             b.Save(lastfile, System.Drawing.Imaging.ImageFormat.Png);
             StringCollection paths = new StringCollection();
             paths.Add(lastfile);
@@ -343,21 +354,41 @@ namespace WindowMeter
         }
 
         
+
         private void CaptureAreaToFile()
         {
-            if (File.Exists(lastfile))
-            {
-                File.Delete(lastfile);
-            }
-
-            lastfile = GetTempFile();
+            this.clearOldFiles();
 
             this.Hide();
             Rectangle r = this.RectangleToScreen(ClientRectangle);
             Bitmap b = GetDesktopImage(r);
-            b.Save(lastfile, System.Drawing.Imaging.ImageFormat.Png);
 
-            this.FileToClipboard(lastfile);
+            if (this.catchAsIcon512x512)
+            {
+                
+                if (b.Width < b.Height) {
+                    b = BitmapOperations.CropToCenter(b, b.Width, b.Width);
+                }
+
+                if (b.Width > b.Height)
+                {
+                    b = BitmapOperations.CropToCenter(b, b.Height, b.Height);
+                }
+
+                b = BitmapOperations.ResizeImage(b, 512, 512);
+                
+                string lastfile = GetTempFile(".ico");
+                BitmapOperations.ConvertToIco(b, lastfile, 512);
+                this.FileToClipboard(lastfile);
+            }
+            else
+            {                
+                string lastfile = GetTempFile(".png");                
+                b.Save(lastfile, System.Drawing.Imaging.ImageFormat.Png);
+                this.FileToClipboard(lastfile);
+            }
+
+            
             //Clipboard.SetImage(b);
             this.Show();
         }
@@ -365,8 +396,11 @@ namespace WindowMeter
         [MethodImpl(MethodImplOptions.NoOptimization)]
         private void FileToClipboard(string path)
         {
+            this.clearOldFiles();            
+            this.lastfile.Add(path);
+
             StringCollection paths = new StringCollection();
-            paths.Add(lastfile);
+            paths.Add(path);
             Clipboard.SetFileDropList(paths);
         }
 
@@ -381,10 +415,10 @@ namespace WindowMeter
             return bitmap;
         }
 
-        public string GetTempFile()
+        public string GetTempFile(string extension = ".png", int number = 0)
         {
             DateTime dt = DateTime.Now;
-            String DocName = String.Format("{0:yyyy-M-d-HH-mm-ss}", dt) + ".png";
+            String DocName = String.Format("{0:yyyy-M-d-HH-mm-ss}", dt) +( number > 0 ? "."+number.ToString()+"." : "") + extension;
 
             string path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Directory.CreateDirectory(path);
@@ -400,7 +434,7 @@ namespace WindowMeter
 
         private void captureWindowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.CaptureScreenToFile();
+
         }
 
         private void WindowMeterForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -409,10 +443,7 @@ namespace WindowMeter
             Properties.Settings.Default.PosTop = this.Top;
             Properties.Settings.Default.Save();
 
-            if (File.Exists(lastfile))
-            {
-                File.Delete(lastfile);
-            }
+            this.clearOldFiles();
 
             try
             {
@@ -560,6 +591,126 @@ namespace WindowMeter
                 this.CaptureAreaToFile();
                 makeAreaScreensot = false;
             }
+        }
+        
+        public bool catchAsIcon512x512 = false;
+
+        private void catchAsIcon512x512ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.catchAsIcon512x512 = !this.catchAsIcon512x512;
+            catchAsIcon512x512ToolStripMenuItem.Checked = this.catchAsIcon512x512;
+        }
+
+        private void screen1ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+
+            if (Screen.AllScreens.Length<1)
+            {                
+                return;
+            }
+
+            Screen screen = Screen.AllScreens[0];
+
+            this.CaptureScreenToFile(screen);
+
+        }
+
+        private void screen2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Screen.AllScreens.Length < 2)
+            {
+                return;
+            }
+
+            Screen screen = Screen.AllScreens[1];
+
+            this.CaptureScreenToFile(screen);
+        }
+
+        private void screen3ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Screen.AllScreens.Length < 3)
+            {
+                return;
+            }
+
+            Screen screen = Screen.AllScreens[2];
+
+            this.CaptureScreenToFile(screen);
+        }
+
+        private void screen4ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Screen.AllScreens.Length < 4)
+            {
+                return;
+            }
+
+            Screen screen = Screen.AllScreens[3];
+
+            this.CaptureScreenToFile(screen);
+        }
+
+        private void CaptureAlllScreenToFile()
+        {
+            if (Screen.AllScreens.Length <= 0)
+            {
+                return;
+            }
+
+            this.clearOldFiles();
+
+            this.Hide();
+
+            StringCollection paths = new StringCollection();
+
+            int num = 0;
+
+            foreach (Screen screen in Screen.AllScreens)
+            {
+                Rectangle r = this.RectangleToScreen(ClientRectangle);
+                Bitmap b = this.CaptureScreen(screen);
+
+                string lastfile = GetTempFile(".png", ++num);
+                b.Save(lastfile, System.Drawing.Imaging.ImageFormat.Png);
+
+                paths.Add(lastfile);
+                
+            }
+            Clipboard.SetFileDropList(paths);
+
+            
+            
+            this.Show();
+        }
+
+        private void allScreensToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.CaptureAlllScreenToFile();
+        }
+
+        private void currentScreenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Screen screen = Screen.FromControl(this);
+            this.CaptureScreenToFile(screen);
+        }
+
+        private void topMostToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            this.TopMost = !this.TopMost;
+            topMostToolStripMenuItem.Checked = this.TopMost;
+        }
+
+        private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void optionsToolStripMenuItem_MouseEnter(object sender, EventArgs e)
+        {
+            topMostToolStripMenuItem.Checked = this.TopMost;
         }
     }
 }
