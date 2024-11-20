@@ -323,6 +323,8 @@ namespace WindowMeter
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
             this.copyToolStripMenuItem.Text = "Copy " + sizeLabel;
+
+            oCRRecognizeToolStripMenuItem.Visible = OCR.IsOCRAvailable();
         }
 
         private Bitmap CaptureScreen(Screen screen)
@@ -391,6 +393,17 @@ namespace WindowMeter
             
             //Clipboard.SetImage(b);
             this.Show();
+        }
+
+        private Bitmap CaptureAreaToBitmap()
+        {
+            
+
+            this.Hide();
+            Rectangle r = this.RectangleToScreen(ClientRectangle);
+            Bitmap b = GetDesktopImage(r);
+            this.Show();
+            return b;
         }
 
         [MethodImpl(MethodImplOptions.NoOptimization)]
@@ -711,6 +724,17 @@ namespace WindowMeter
         private void optionsToolStripMenuItem_MouseEnter(object sender, EventArgs e)
         {
             topMostToolStripMenuItem.Checked = this.TopMost;
+        }
+
+        private void oCRRecognizeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string text = OCR.ImageToText(this.CaptureAreaToBitmap());
+            
+            if (text == null || text.Trim()=="") {
+                text = "?";
+            }
+
+            Clipboard.SetText(text);
         }
     }
 }

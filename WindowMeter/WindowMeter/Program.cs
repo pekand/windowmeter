@@ -13,6 +13,8 @@ namespace WindowMeter
         [STAThread]
         static void Main()
         {
+            OCR.init();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new WindowMeterForm());
