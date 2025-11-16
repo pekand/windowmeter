@@ -93,8 +93,6 @@ namespace WindowMeter
             base.OnMouseDown(e);
             if (e.Button == MouseButtons.Left)
             {
-                this.Opacity = 0.4;
-
                 dragOffset = this.PointToScreen(e.Location);
                 var formLocation = FindForm().Location;
                 dragOffset.X -= formLocation.X;
@@ -107,7 +105,7 @@ namespace WindowMeter
             base.OnMouseMove(e);
             if (e.Button == MouseButtons.Left)
             {
-
+                this.Opacity = 0.4;
                 Point newLocation = this.PointToScreen(e.Location);
 
                 newLocation.X -= dragOffset.X;
@@ -313,11 +311,7 @@ namespace WindowMeter
 
         private void WindowMeterForm_DoubleClick(object sender, EventArgs e)
         {
-            this.Height = 200;
-            this.Width = 200;
-            this.Left = (Screen.PrimaryScreen.Bounds.Width - this.Width) / 2;
-            this.Top = (Screen.PrimaryScreen.Bounds.Height - this.Height) / 2;
-            sizeLabel = this.Width.ToString() + 'x' + this.Height.ToString();
+            this.CaptureAreaToFile();
         }
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)

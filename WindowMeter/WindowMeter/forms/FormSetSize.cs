@@ -24,9 +24,9 @@ namespace WindowMeter
 
             try
             {
-                string[] result = Regex.Split(textSize.Text, "\\s*(\\d+)\\s*x|X\\s*(\\d+)\\s*");
+                string[] result = Regex.Split(textSize.Text, "\\s*(\\d+)\\s*(?:[xX\\s]+)\\s*(\\d+)\\s*");
 
-                if (result.Length != 3)
+                if (result.Length != 4)
                 {
                     return;
                 }
@@ -51,6 +51,13 @@ namespace WindowMeter
         private void buttonCancel_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void textSize_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter) {
+                button2_Click(sender, e);
+            }
         }
     }
 }

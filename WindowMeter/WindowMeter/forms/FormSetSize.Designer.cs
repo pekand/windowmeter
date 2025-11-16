@@ -60,6 +60,7 @@ namespace WindowMeter
             this.textSize.Name = "textSize";
             this.textSize.Size = new System.Drawing.Size(365, 20);
             this.textSize.TabIndex = 2;
+            this.textSize.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textSize_KeyDown);
             // 
             // FormSetSize
             // 
