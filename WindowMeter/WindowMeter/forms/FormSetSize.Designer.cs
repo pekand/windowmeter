@@ -75,6 +75,7 @@ namespace WindowMeter
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FormSetSize";
             this.Load += new System.EventHandler(this.FormSetSize_Load);
+            this.Shown += new System.EventHandler(this.FormSetSize_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 

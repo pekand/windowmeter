@@ -41,7 +41,7 @@ namespace WindowMeter
 
         private void FormSetSize_Load(object sender, EventArgs e)
         {
-
+            
         }
 
         public void SetSize(int width = 0, int height = 0) {
@@ -58,6 +58,11 @@ namespace WindowMeter
             if (e.KeyCode == Keys.Enter) {
                 button2_Click(sender, e);
             }
+        }
+
+        private void FormSetSize_Shown(object sender, EventArgs e)
+        {
+            this.textSize.Focus();
         }
     }
 }

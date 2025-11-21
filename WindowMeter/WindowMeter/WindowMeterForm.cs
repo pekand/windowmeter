@@ -585,9 +585,13 @@ namespace WindowMeter
 
         private void setSizeToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
+
+            bool temp = this.TopMost;
+            this.TopMost = false;
             formSetSize.windowMeterForm = this;
             formSetSize.SetSize(this.Width, this.Height);
             formSetSize.ShowDialog();
+            this.TopMost = temp;
         }
 
 
