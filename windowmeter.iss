@@ -24,7 +24,7 @@ LicenseFile=C:\Documents\Projects\github\apps\windowmeter\LICENSE.md
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
 OutputBaseFilename=install-windowmeter
-SetupIconFile=C:\Documents\Projects\github\apps\windowmeter\WindowMeter\WindowMeter\windowmeter-128.ico
+SetupIconFile=WindowMeter\WindowMeter\windowmeter-128.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -36,7 +36,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: ".\files\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "WindowMeter\WindowMeter\bin\x64\Release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
